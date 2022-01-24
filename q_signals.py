@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
+# pylint: disable=C0103
+
+" Utility functions to use Das Keyboard Q via local server."
+
 import json
 import logging
 import requests
 
 BACKEND_URL = "http://david:27301/api/1.0/signals"
-HEADERS =  { "Content-type" : "application/json" }
+HEADERS = {"Content-type" : "application/json"}
 PID = 'DK5QPID'
 DEFAULT_ZONE_ID = "KEY_R"
 Q_BLUE = "#0000FF"
@@ -26,21 +30,31 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-def send_signal(color, message, zoneId=DEFAULT_ZONE_ID, effect="BLINK", name="Alert"):
+def send_signal(color, message, zone_id=DEFAULT_ZONE_ID, effect="BLINK", name="Alert"):
+
+    """
+    send_signal(): Send the specified signal to Das Keyboard Q via call to API
+    """
+
     signal["message"] = message
     signal["color"] = color
     signal["effect"] = effect
     signal["name"] = name
-    signal["zoneId"] = zoneId
+    signal["zoneId"] = zone_id
     signal_json = json.dumps(signal)
-    logging.debug(f'Sending signal: "{message}" Color: {color}')
+    logging.debug("Sending signal: %s Color: %s", message, color)
     return requests.post(BACKEND_URL, data=signal_json, headers=HEADERS)
 
-def delete_signal_by_zone(zoneId=DEFAULT_ZONE_ID):
+def delete_signal_by_zone(zone_id=DEFAULT_ZONE_ID):
+    """
+    delete_signal_by_zone(): Delete signal in the zone specified for  Das Keyboard Q via call to API
+    """
     logging.debug("Deleting signal by zone")
-    return requests.delete(BACKEND_URL + '/pid/'+ PID + '/zoneId/' + zoneId, headers=HEADERS)
-    
-def delete_signal_by_id(id):
+    return requests.delete(BACKEND_URL + '/pid/'+ PID + '/zoneId/' + zone_id, headers=HEADERS)
+
+def delete_signal_by_id(signal_id):
+    """
+    elete_signal_by_idl(): Delete signal pecified by id for  Das Keyboard Q via call to API
+    """
     logging.debug("Deleting signal by id")
-    return requests.delete(f'{BACKEND_URL}/{str(id)}', headers=HEADERS)
-    
+    return requests.delete(f'{BACKEND_URL}/{str(signal_id)}', headers=HEADERS)
