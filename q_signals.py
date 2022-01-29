@@ -25,10 +25,18 @@ signal = {
     'clientName': 'DBK Send_signal'
 }
 
-logging.basicConfig(
-    format='%(asctime)s - %(levelname)s: %(message)s',
-    level=logging.INFO
-)
+# logging.basicConfig(
+#     format='%(asctime)s - %(levelname)s: %(message)s',
+#     level=logging.INFO
+# )
+
+logger = logging.getLogger(__name__)
+handler = logging.StreamHandler()
+formatter = logging.Formatter(
+        '%(asctime)s - %(levelname)s: %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 def send_signal(color, message, zone_id=DEFAULT_ZONE_ID, effect="BLINK", name="Alert"):
 
@@ -42,19 +50,19 @@ def send_signal(color, message, zone_id=DEFAULT_ZONE_ID, effect="BLINK", name="A
     signal["name"] = name
     signal["zoneId"] = zone_id
     signal_json = json.dumps(signal)
-    logging.debug("Sending signal: %s Color: %s", message, color)
+    logger.debug("Sending signal: %s Color: %s", message, color)
     return requests.post(BACKEND_URL, data=signal_json, headers=HEADERS)
 
 def delete_signal_by_zone(zone_id=DEFAULT_ZONE_ID):
     """
     delete_signal_by_zone(): Delete signal in the zone specified for  Das Keyboard Q via call to API
     """
-    logging.debug("Deleting signal by zone")
+    logger.debug("Deleting signal by zone %s", zone_id)
     return requests.delete(BACKEND_URL + '/pid/'+ PID + '/zoneId/' + zone_id, headers=HEADERS)
 
 def delete_signal_by_id(signal_id):
     """
-    elete_signal_by_idl(): Delete signal pecified by id for  Das Keyboard Q via call to API
+    delete_signal_by_idl(): Delete signal pecified by id for  Das Keyboard Q via call to API
     """
-    logging.debug("Deleting signal by id")
+    logger.debug("Deleting signal by id %s", signal_id)
     return requests.delete(f'{BACKEND_URL}/{str(signal_id)}', headers=HEADERS)
